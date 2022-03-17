@@ -1,0 +1,9 @@
+datasets/
+perc_torch
+perc_env
+*git*
+tests
+kaggle.json
+.env
+__pycache__
+.idea
