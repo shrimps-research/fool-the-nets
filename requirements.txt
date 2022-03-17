@@ -1,4 +1,4 @@
 python-dotenv==0.19.2
-wget=3.2
+wget==3.2
 torch==1.11.0
 torchvision==0.12.0
