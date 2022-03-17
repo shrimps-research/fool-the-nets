@@ -22,6 +22,7 @@ __pycache__/*
 .idea
 .vscode
 tags
+.idea
 
 # Package files
 *.egg
@@ -52,3 +53,9 @@ MANIFEST
 .venv*/
 .conda*/
 .python-version
+
+# Custom paths
+.env
+kaggle.json
+perc_env
+datasets
