@@ -4,7 +4,7 @@ import wget
 from zipfile import ZipFile
 
 from src.data.datasets import KAGGLE_URLS, DATASET_NAMES, IMAGENET200, KAGGLE_DATASETS, WGET_DATASETS, WGET_URLS
-from src.settings import DEFAULT_DATASET_PATH
+from src.settings import DEFAULT_DATASETS_PATH
 
 
 def download(dataset, destination_path):
@@ -38,7 +38,7 @@ def already_downloaded(dataset, destination_path):
 def parsed_args():
   parser = argparse.ArgumentParser()
   parser.add_argument('--dataset', help='Dataset to download', default=IMAGENET200, choices=DATASET_NAMES, type=str)
-  parser.add_argument('--path', help='Path to store the dataset', default=DEFAULT_DATASET_PATH, type=str)
+  parser.add_argument('--path', help='Path to store the dataset', default=DEFAULT_DATASETS_PATH, type=str)
   return parser.parse_args()
 
 

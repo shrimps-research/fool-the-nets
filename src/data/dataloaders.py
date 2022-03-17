@@ -5,14 +5,14 @@ import torch
 import os
 
 from src.data.datasets import IMAGENET200
-from src.settings import DEFAULT_DATASET_PATH
+from src.settings import DEFAULT_DATASETS_PATH
 
 def generate_dataloader(
   dataset=IMAGENET200,
   dataset_type='train',
   batch_size=2,
   transform=T.ToTensor(),
-  datasets_path=DEFAULT_DATASET_PATH
+  datasets_path=DEFAULT_DATASETS_PATH
 ):
   parent_dataset_path = os.path.join(datasets_path, dataset)
   requested_dataset_path = os.path.join(parent_dataset_path, dataset_type)

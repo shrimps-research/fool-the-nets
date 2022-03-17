@@ -2,7 +2,7 @@ import argparse
 import os
 
 from src.data.datasets import DATASET_NAMES, IMAGENET200
-from src.settings import DEFAULT_DATASET_PATH
+from src.settings import DEFAULT_DATASETS_PATH
 
 
 def prepare_imagenet200(dataset, destination_path):
@@ -33,7 +33,7 @@ def dataset_does_not_exist():
 def parsed_args():
   parser = argparse.ArgumentParser()
   parser.add_argument('--dataset', help='Dataset to prepare', default=IMAGENET200, choices=DATASET_NAMES, type=str)
-  parser.add_argument('--path', help='Path where dataset is stored', default=DEFAULT_DATASET_PATH, type=str)
+  parser.add_argument('--path', help='Path where dataset is stored', default=DEFAULT_DATASETS_PATH, type=str)
   return parser.parse_args()
 
 
