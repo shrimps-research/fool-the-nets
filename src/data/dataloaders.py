@@ -4,11 +4,16 @@ from torchvision import transforms as T
 import torch
 import os
 
-from src.data.datasets import IMAGENET200
+from src.data.datasets import IMAGENET100
 from src.settings import DEFAULT_DATASETS_PATH
 
-def generate_dataloader(
-  dataset=IMAGENET200,
+class ImageData:
+  def __init__(self, dataset, dataloader):
+    self.dataset = dataset
+    self.dataloader = dataloader
+
+def get_dataset_and_dataloader(
+  dataset=IMAGENET100,
   dataset_type='train',
   batch_size=2,
   transform=T.ToTensor(),
@@ -26,10 +31,7 @@ def generate_dataloader(
 
   kwargs = {"pin_memory": True, "num_workers": 1} if torch.cuda.is_available() else {}
 
-  return DataLoader(
-    dataset,
-    batch_size=batch_size,
-    shuffle=True,
-    **kwargs
-  )
+  dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, **kwargs)
+
+  return dataset, dataloader
 
