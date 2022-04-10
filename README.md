@@ -1,9 +1,41 @@
 # PerceiverIO & Adversarial Attacks
 
+
+## White box attacks
+
+- Fast Gradient Sign Method (FGSM)
+    ~~~
+    python attacks/white_box/fgsm.py [--model {perceiver-io,vit}] [--epsilon EPSILON] [--size SIZE] [--batch BATCH]
+    ~~~
+    where size is the number of images we want to attack.
+
+- Projected Gradient Descent (PGD)
+Similarly,
+    ~~~
+    python attacks/white_box/pgd.py [-h] [--model {perceiver-io,vit}] [--epsilon EPSILON] [--step STEP] [--iterations ITERATIONS] [--size SIZE] [--batch BATCH]
+    ~~~
+
+## Black box attacks
+
+### Transfer attacking
+Use the adversarial examples that were found for a `source` model by using a white-box method in order 
+to attack a `target` network. This is considered a black-box attack as we do not use the model parameters of the target network:
+
+- FGSM:
+    ~~~
+    python attacks/black_box/fgsm_transfer_attack.py  [-h] [--source {perceiver-io,vit}] [-h] [--target {perceiver-io,vit}] [--epsilon EPSILON] [--size SIZE] [--batch BATCH]
+    ~~~
+
+- PGD:
+    ~~~
+    python attacks/black_box/pgd_transfer_attack.py  [-h] [--source {perceiver-io,vit}] [-h] [--target {perceiver-io,vit}] [--epsilon EPSILON] [--step STEP] [--iterations ITERATIONS] [--size SIZE] [--batch BATCH]
+    ~~~
+
+
 ## Development Guidelines
 
-### Setup environment
-In case conda environments are supported on the machine, run the following commands. 
+### Setup environment (conda creation needs to be tested!)
+In case conda environments are supported on the machine, run the following commands.
 Otherwise, create a python environment and run the last two commands.
 ~~~
 make conda-env
@@ -31,9 +63,8 @@ The `path` argument takes a default value from `.env`, so there is no need to fi
 Go to `src/data/scripts/prepare.py` and add a handler for the new dataset in order to create the structure requested for
 PyTorch DataLoader.
 
-For example if the `fruits/train` is given to the PyTorch DataLoader the structure of this directory 
+For example if the `fruits/train` is given to the PyTorch DataLoader the structure of this directory
 should be the below, where `orange` and `apple` are the classes of the dataset.
-~~~
 fruits/train
 ├── orange
 │   ├── orange_image1.png
