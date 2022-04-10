@@ -94,7 +94,7 @@ def parsed_args():
     type=str
   )
   parser.add_argument(
-    '--epsilon', help='Epsilon parameter of FGSM', default=0.03, type=int
+    '--epsilon', help='Epsilon parameter of FGSM', default=0.03, type=float
   )
   parser.add_argument(
     '--size', help='Number of images to attack', default=10, type=int

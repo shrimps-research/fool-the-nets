@@ -102,10 +102,10 @@ def parsed_args():
     type=str
   )
   parser.add_argument(
-    '--epsilon', help='Epsilon parameter of PGD', default=0.03, type=int
+    '--epsilon', help='Epsilon parameter of PGD', default=0.03, type=float
   )
   parser.add_argument(
-    '--step', help='Epsilon parameter of PGD', default=0.005, type=int
+    '--step', help='Epsilon parameter of PGD', default=0.005, type=float
   )
   parser.add_argument(
     '--iterations', help='Epsilon parameter of PGD', default=10, type=int

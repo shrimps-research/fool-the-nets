@@ -25,16 +25,14 @@ def parsed_args():
     default=0.06, type=int
   )
   parser.add_argument(
-    '--size', help='Number of images to attack', default=10, type=int
+    '--size', help='Number of images to attack', default=10, type=float
   )
   parser.add_argument(
     '--batch', help='Batch size', default=10, type=int
   )
   return parser.parse_args()
 
-
-if __name__ == "__main__":
-  args = parsed_args()
+def fgsm_transfer_attack(args):
   fgsm(
     args.source,
     args.target,
@@ -42,3 +40,7 @@ if __name__ == "__main__":
     args.size,
     args.batch
   )
+
+if __name__ == "__main__":
+  args = parsed_args()
+  fgsm_transfer_attack(args)
