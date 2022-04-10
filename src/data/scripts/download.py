@@ -18,7 +18,7 @@ def kaggle_download(dataset, destination_path):
   from kaggle.api.kaggle_api_extended import KaggleApi
   kaggle = KaggleApi()
   kaggle.authenticate()
-  kaggle.dataset_download_files(KAGGLE_URLS[dataset], path=destination_path, unzip=True)
+  kaggle.dataset_download_files(KAGGLE_URLS[dataset], path=os.path.join(destination_path, dataset), unzip=True)
   return KAGGLE_URLS[dataset].split('/')[-1]
 
 
