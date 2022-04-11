@@ -66,6 +66,7 @@ PyTorch DataLoader.
 For example if the `fruits/train` is given to the PyTorch DataLoader the structure of this directory
 should be the below, where `orange` and `apple` are the classes of the dataset.
 fruits/train
+~~~
 ├── orange
 │   ├── orange_image1.png
 │   └── orange_image1.png
@@ -81,11 +82,14 @@ python -m src.data.scripts.prepare --dataset <dataset-name> --path <path-to-stor
 ~~~
 
 ### Open locally jupyter lab from server
-~~~
-# for doris:
-make jupyter-doris id=s3264009
 
-# for boris:
+#### for doris:
+~~~
+make jupyter-doris id=s3264009
+~~~
+
+#### for boris:
+~~~
 make jupyter-boris id=s3264009
 ~~~
 
