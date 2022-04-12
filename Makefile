@@ -1,4 +1,4 @@
-VENV := perc_torch
+VENV := torch_library
 DEFAULT_SERVER := doris
 
 .ONESHELL:
@@ -22,10 +22,10 @@ install requirements.txt:
 
 machine=$(DEFAULT_SERVER)
 deploy $(id) $(machine):
-	rsync -azv -e 'ssh -A -J $(id)@ssh.liacs.nl' ../perceiverIO-adversarial-attacks shrimps@$(machine):~/ --exclude-from='deployment-excluded-paths.txt'
+	rsync -azv -e 'ssh -A -J $(id)@ssh.liacs.nl' ../fool-the-nets shrimps@$(machine):~/ --exclude-from='deployment-excluded-paths.txt'
 
 download $(id) $(machine):
-	rsync -azv -e 'ssh -A -J $(id)@ssh.liacs.nl' shrimps@doris:~/perceiverIO-adversarial-attacks/* ./perceiverIO-adversarial-attacks-'$(machine)'/
+	rsync -azv -e 'ssh -A -J $(id)@ssh.liacs.nl' shrimps@doris:~/fool-the-nets/* ./fool-the-nets-'$(machine)'/
 
 jupyter-doris $(id):
 	ssh -N -f -L 9001:localhost:9001 $(id)@ssh.liacs.nl ssh -4 -N -f -L 9001:doris:9000 shrimps@doris
