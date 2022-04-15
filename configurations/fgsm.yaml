@@ -1,0 +1,5 @@
+configs:
+  models: [ vit, perceiver-io ]
+  sizes: [ 64 ]
+  batches: [ 16 ]
+  epsilon: [0.01, 0.03, 0.05]

@@ -1,0 +1,7 @@
+configs:
+  models: [ vit, perceiver-io ]
+  sizes: [ 64 ]
+  batches: [ 16 ]
+  n_classes: [ 1000 ]
+  binary_search_steps: [2, 5]
+  max_iterations: [500, 1000]

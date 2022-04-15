@@ -9,3 +9,6 @@ timm==0.5.4
 scikit-learn==1.0.2
 sklearn==0.0
 kaggle==1.5.12
+PyYAML==6.0
+hydra==2.5
+omegaconf==2.1.2
