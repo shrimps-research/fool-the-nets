@@ -28,7 +28,6 @@ class FastGradientTransform(torch.nn.Module):
         y=self.target,
         targeted=True
       )
-    print(image_with_noise.squeeze().shape)
 
     return image_with_noise.squeeze()
 
