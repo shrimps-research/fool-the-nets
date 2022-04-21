@@ -18,47 +18,32 @@ class PretrainedModel:
 @dataclass
 class EvaluationResults:
   accuracy: float
-  confidences: np.ndarray
+  confidence: float
 
 def evaluate(
   model,
   dataloader,
-  feature_extractor=None,
-  preprocessing_functions=[],
-  device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
 ):
-  # model.eval()
+  model.eval()
   accuracy = load_metric("accuracy")
-  confidences = torch.tensor([])
+  confidences = np.array([])
 
   for batch in tqdm(dataloader):
 
-    if feature_extractor:
-      batch_array = Variable(batch[0], requires_grad=True).detach().numpy()
-      inputs = feature_extractor(
-        list(batch_array),
-        return_tensors="pt"
-      ).pixel_values.to(device)
-    else:
-      inputs = Variable(batch[0], requires_grad=True)
-
-
-    for f in preprocessing_functions:
-      inputs = f(inputs)
-
+    inputs = batch[0]
+    labels = batch[1]
 
     logits = model(inputs)
     predictions = logits.argmax(-1).cpu().detach().numpy()
-    references = batch[1].numpy()
-    probs = F.softmax(logits, dim=1)
-    batch_confidences = probs.gather(1, batch[1].unsqueeze(1))
-    confidences = torch.cat([confidences, batch_confidences])
-
+    references = labels.numpy()
     accuracy.add_batch(predictions=predictions, references=references)
 
+    probs = F.softmax(logits, dim=1)
+    batch_confidences = probs.gather(1, labels.unsqueeze(1)).cpu().detach().numpy()
+    confidences = np.concatenate((confidences, np.squeeze(batch_confidences)))
 
   return EvaluationResults(
     accuracy=accuracy.compute()['accuracy'],
-    confidences=confidences.cpu().detach().numpy(),
+    confidence=np.mean(confidences),
   )
 
