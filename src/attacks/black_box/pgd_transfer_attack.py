@@ -1,5 +1,8 @@
 import argparse
-from src.attacks.white_box.fgsm import fgsm, SUPPORTED_MODEL_NAMES
+
+from src.attacks.adversarial_attack import adversarial_attack
+from src.attacks.white_box.fgsm import SUPPORTED_MODEL_NAMES
+from src.attacks.white_box.transforms.projected_gradient import ProjectedGradientTransform
 from src.models.perceiver import PERCEIVER_IO_LEARNED_POS_EMBEDDINGS
 from src.models.vit import ViT
 
@@ -31,12 +34,18 @@ def parsed_args():
   return parser.parse_args()
 
 
+
 if __name__ == "__main__":
   args = parsed_args()
-  fgsm(
+  adversarial_attack(
     args.source,
     args.target,
-    args.epsilon,
     args.size,
-    args.batch
+    args.batch,
+    methodToRun=ProjectedGradientTransform,
+    kwargs={
+            'epsilon': args.epsilon,
+            'step_size': args.step,
+            'iterations': args.iterations
+          },
   )

@@ -1,20 +1,12 @@
 import argparse
-import numpy as np
-from src.data.dataloaders import get_dataset_and_dataloader
-from src.data.datasets import IMAGENET100
-from torchvision import transforms as T
 
-from src.models.common import evaluate
-from src.models.perceiver import get_perceiver_io, PERCEIVER_IO_LEARNED_POS_EMBEDDINGS
-from src.models.vit import get_vit, ViT
+from src.models.perceiver import PERCEIVER_IO_LEARNED_POS_EMBEDDINGS
+from src.models.vit import ViT
 from src.attacks.adversarial_attack import adversarial_attack
 from src.attacks.white_box.transforms.carlini_wagner import CarliniWagnerL2
 import os
 
 DEFAULT_CONFIG_PATH = os.getenv("DEFAULT_CONFIG_PATH")
-
-
-
 SUPPORTED_MODEL_NAMES = [
   PERCEIVER_IO_LEARNED_POS_EMBEDDINGS,
   ViT

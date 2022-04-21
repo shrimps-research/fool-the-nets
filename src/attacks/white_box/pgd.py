@@ -1,14 +1,8 @@
 import argparse
-import numpy as np
-from torchvision import transforms as T
 
 from src.attacks.white_box.transforms.projected_gradient import ProjectedGradientTransform
-from src.data.dataloaders import get_dataset_and_dataloader
-from src.data import visualizer
-from src.data.datasets import IMAGENET100
-from src.models.common import evaluate
-from src.models.perceiver import get_perceiver_io, PERCEIVER_IO_LEARNED_POS_EMBEDDINGS
-from src.models.vit import get_vit, ViT
+from src.models.perceiver import PERCEIVER_IO_LEARNED_POS_EMBEDDINGS
+from src.models.vit import ViT
 from src.attacks.adversarial_attack import adversarial_attack
 
 SUPPORTED_MODEL_NAMES = [
@@ -22,7 +16,7 @@ def parsed_args():
   parser.add_argument(
     '--model',
     help='Model to attack',
-    default=ViT,
+    default=PERCEIVER_IO_LEARNED_POS_EMBEDDINGS,
     choices=SUPPORTED_MODEL_NAMES,
     type=str
   )
