@@ -25,10 +25,10 @@ def parsed_args():
   parser.add_argument(
     '--epsilon',
     help='Epsilon parameter of FGSM',
-    default=0.06, type=int
+    default=0.06, type=float
   )
   parser.add_argument(
-    '--size', help='Number of images to attack', default=10, type=float
+    '--size', help='Number of images to attack', default=10, type=int
   )
   parser.add_argument(
     '--batch', help='Batch size', default=10, type=int
