@@ -19,6 +19,7 @@ class PretrainedModel:
 class EvaluationResults:
   accuracy: float
   confidence: float
+  confidence_std: float
 
 def evaluate(
   model,
@@ -45,5 +46,6 @@ def evaluate(
   return EvaluationResults(
     accuracy=accuracy.compute()['accuracy'],
     confidence=np.mean(confidences),
+    confidence_std=np.std(confidences)
   )
 

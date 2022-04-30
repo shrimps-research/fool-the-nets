@@ -13,7 +13,7 @@ from src.models.vit import get_vit, ViT
 
 DATASET = IMAGENET100
 DATASET_DIR = 'train.X1'
-CENTER_CROP_SIZE = 250
+CENTER_CROP_SIZE = 300
 RESULTS_DIR = 'results'
 RESULTS_FILE = 'results.txt'
 
@@ -66,7 +66,7 @@ def adversarial_attack(
 
 
     dir_path = get_results_dir(attack_transform, source_model_name, target_model_name)
-    run_name = f'{source_model_name},{target_model_name},{size},{repr(attack_transform)},{kwargs}'
+    run_name = f'{source_model_name}-{target_model_name}-{size}-{repr(attack_transform)}-{kwargs}'
     write_results(attack_results, dir_path, results, run_name)
     store_attacked_image(adversarial_train_dataloader, dir_path, image_name_from(kwargs, size))
 
@@ -98,25 +98,32 @@ def run_on_original_images(batch_size, size, source_model, target_model):
 
 
 def get_results_dir(attack_transform, source_model_name, target_model_name):
+    Path(os.path.join(os.path.dirname(__file__), RESULTS_DIR)).mkdir(parents=True, exist_ok=True)
     dir_path = os.path.join(
         os.path.dirname(__file__),
         f'{RESULTS_DIR}/{repr(attack_transform)}-{source_model_name}-{target_model_name}'
     )
     Path(dir_path).mkdir(parents=True, exist_ok=True)
-    return  dir_path
+    return dir_path
 
 
 def write_results(attack_results, dir_path, results, run_name):
     file_path = os.path.join(dir_path, RESULTS_FILE)
+    if not Path(file_path).is_file():
+        with open(file_path, 'a+') as f:
+            f.write(
+                f'accuracy, accuracy after attack, mean confidence, '
+                f'mean confidence after attack, confidence std, confidence std after attack, run\n'
+            )
     with open(file_path, 'a+') as f:
         if results is not None:
             f.write(
                 f'{results.accuracy}, {attack_results.accuracy}, {results.confidence}, '
-                f'{attack_results.confidence}, {run_name}\n'
+                f'{attack_results.confidence}, {results.confidence_std}, {attack_results.confidence_std}, {run_name}\n'
             )
         else:
             f.write(
-                f'{attack_results.accuracy}, {attack_results.confidence}, {run_name}\n'
+                f', {attack_results.accuracy}, , {attack_results.confidence}, , {attack_results.confidence_std}, {run_name}\n'
             )
 
 
