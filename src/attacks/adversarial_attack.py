@@ -9,22 +9,29 @@ from pathlib import Path
 
 from src.models.common import evaluate
 from src.models.perceiver import get_perceiver_io, PERCEIVER_IO_LEARNED_POS_EMBEDDINGS
+from src.models.vgg import get_vgg, VGG
 from src.models.vit import get_vit, ViT
+from src.models.swin import get_swin, SWIN
+from src.attacks.white_box.transforms.fast_gradient import FastGradientTransform
 
 DATASET = IMAGENET100
 DATASET_DIR = 'train.X1'
 CENTER_CROP_SIZE = 300
 RESULTS_DIR = 'results'
-RESULTS_FILE = 'results.txt'
+RESULTS_FILE = 'results.csv'
 
 SUPPORTED_MODEL_NAMES = [
   PERCEIVER_IO_LEARNED_POS_EMBEDDINGS,
-  ViT
+  ViT,
+  SWIN,
+  VGG
 ]
 
 GET_MODEL_FUNCTION_BY_NAME = {
   PERCEIVER_IO_LEARNED_POS_EMBEDDINGS: get_perceiver_io,
-  ViT: get_vit
+  ViT: get_vit,
+  SWIN: get_swin,
+  VGG: get_vgg
 }
 
 def adversarial_attack(
@@ -34,7 +41,7 @@ def adversarial_attack(
     batch_size,
     methodToRun,
     kwargs,
-    include_original_accuracy=False
+    include_original_accuracy=True
 ):
 
     source_model = GET_MODEL_FUNCTION_BY_NAME[source_model_name](source_model_name)
@@ -47,16 +54,21 @@ def adversarial_attack(
     else:
         results = None
 
-
     adversarial_train_set, adversarial_train_dataloader = get_dataset_and_dataloader(
         dataset=DATASET,
         dataset_type=DATASET_DIR,
         max_size=size,
         batch_size=batch_size,
+
         transform=T.Compose([
+            T.RandomResizedCrop(224),
+            T.RandomHorizontalFlip(),
             T.ToTensor(),
-            T.CenterCrop(CENTER_CROP_SIZE),
-            T.Resize(source_model.expected_image_size),
+            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+
+            # T.ToTensor(),
+            # T.CenterCrop(CENTER_CROP_SIZE),
+            # T.Resize(source_model.expected_image_size),
             attack_transform,
         ]),
     )
@@ -86,9 +98,13 @@ def run_on_original_images(batch_size, size, source_model, target_model):
         max_size=size,
         batch_size=batch_size,
         transform=T.Compose([
+            T.RandomResizedCrop(224),
+            T.RandomHorizontalFlip(),
             T.ToTensor(),
-            T.CenterCrop(CENTER_CROP_SIZE),
-            T.Resize(source_model.expected_image_size)
+            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            # T.ToTensor(),
+            # T.CenterCrop(CENTER_CROP_SIZE),
+            # T.Resize(source_model.expected_image_size),
         ]),
     )
     results = evaluate(target_model.model, train_dataloader)
@@ -136,3 +152,6 @@ def store_attacked_image(adversarial_train_dataloader, dir_path, image_name):
 
 def image_name_from(attack_args, size):
     return f'{attack_args}_{size}.png'
+
+if __name__ == '__main__':
+    adversarial_attack('vgg', 'vgg', 2, 2, FastGradientTransform, kwargs={'epsilon': 0.03}, include_original_accuracy=True)
