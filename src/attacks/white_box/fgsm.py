@@ -4,11 +4,7 @@ from src.models.perceiver import PERCEIVER_IO_LEARNED_POS_EMBEDDINGS
 from src.models.vit import ViT
 from src.attacks.adversarial_attack import adversarial_attack
 from src.attacks.white_box.transforms.fast_gradient import FastGradientTransform
-
-SUPPORTED_MODEL_NAMES = [
-  PERCEIVER_IO_LEARNED_POS_EMBEDDINGS,
-  ViT
-]
+from src.attacks.adversarial_attack import SUPPORTED_MODEL_NAMES
 
 def parsed_args():
   parser = argparse.ArgumentParser()
