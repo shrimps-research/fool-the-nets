@@ -12,6 +12,7 @@ from src.models.perceiver import get_perceiver_io, PERCEIVER_IO_LEARNED_POS_EMBE
 from src.models.vgg import get_vgg, VGG
 from src.models.vit import get_vit, ViT
 from src.models.swin import get_swin, SWIN
+from src.models.xception import get_xception, XCEPTION
 from src.attacks.white_box.transforms.fast_gradient import FastGradientTransform
 
 DATASET = IMAGENET100
@@ -24,14 +25,16 @@ SUPPORTED_MODEL_NAMES = [
   PERCEIVER_IO_LEARNED_POS_EMBEDDINGS,
   ViT,
   SWIN,
-  VGG
+  VGG,
+  XCEPTION
 ]
 
 GET_MODEL_FUNCTION_BY_NAME = {
   PERCEIVER_IO_LEARNED_POS_EMBEDDINGS: get_perceiver_io,
   ViT: get_vit,
   SWIN: get_swin,
-  VGG: get_vgg
+  VGG: get_vgg,
+  XCEPTION: get_xception
 }
 
 def adversarial_attack(
@@ -41,7 +44,7 @@ def adversarial_attack(
     batch_size,
     methodToRun,
     kwargs,
-    include_original_accuracy=True
+    include_original_accuracy=False
 ):
 
     source_model = GET_MODEL_FUNCTION_BY_NAME[source_model_name](source_model_name)
@@ -65,11 +68,11 @@ def adversarial_attack(
             T.RandomHorizontalFlip(),
             T.ToTensor(),
             T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            attack_transform,
 
             # T.ToTensor(),
             # T.CenterCrop(CENTER_CROP_SIZE),
             # T.Resize(source_model.expected_image_size),
-            attack_transform,
         ]),
     )
     attack_results = evaluate(target_model.model, adversarial_train_dataloader)
