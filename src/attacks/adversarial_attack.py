@@ -1,4 +1,6 @@
 import numpy as np
+import torch
+import time
 from src.data.dataloaders import get_dataset_and_dataloader
 from src.data.datasets import IMAGENET100
 from torchvision import transforms as T
@@ -46,7 +48,7 @@ def adversarial_attack(
     kwargs,
     include_original_accuracy=False
 ):
-
+    start_time = time.time()
     source_model = GET_MODEL_FUNCTION_BY_NAME[source_model_name](source_model_name)
     target_model = get_target_model(source_model, source_model_name, target_model_name)
     attack_transform = methodToRun(source_model.model, **kwargs)
@@ -64,15 +66,15 @@ def adversarial_attack(
         batch_size=batch_size,
 
         transform=T.Compose([
-            T.RandomResizedCrop(224),
-            T.RandomHorizontalFlip(),
+            # T.RandomResizedCrop(224),
+            T.CenterCrop(CENTER_CROP_SIZE),
+            T.Resize(source_model.expected_image_size),
+            # T.RandomHorizontalFlip(),
             T.ToTensor(),
-            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             attack_transform,
-
+            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
             # T.ToTensor(),
             # T.CenterCrop(CENTER_CROP_SIZE),
-            # T.Resize(source_model.expected_image_size),
         ]),
     )
     attack_results = evaluate(target_model.model, adversarial_train_dataloader)
@@ -82,8 +84,9 @@ def adversarial_attack(
 
     dir_path = get_results_dir(attack_transform, source_model_name, target_model_name)
     run_name = f'{source_model_name}-{target_model_name}-{size}-{repr(attack_transform)}-{kwargs}'
-    write_results(attack_results, dir_path, results, run_name)
+    write_results(attack_results, dir_path, results, run_name, start_time)
     store_attacked_image(adversarial_train_dataloader, dir_path, image_name_from(kwargs, size))
+    print(f'Time took for {source_model_name} -> {target_model_name}: {time.time() - start_time}')
 
 
 def get_target_model(source_model, source_model_name, target_model_name):
@@ -126,30 +129,30 @@ def get_results_dir(attack_transform, source_model_name, target_model_name):
     return dir_path
 
 
-def write_results(attack_results, dir_path, results, run_name):
+def write_results(attack_results, dir_path, results, run_name, start_time):
     file_path = os.path.join(dir_path, RESULTS_FILE)
     if not Path(file_path).is_file():
         with open(file_path, 'a+') as f:
             f.write(
                 f'accuracy, accuracy after attack, mean confidence, '
-                f'mean confidence after attack, confidence std, confidence std after attack, run\n'
+                f'mean confidence after attack, confidence std, confidence std after attack, run, time\n'
             )
     with open(file_path, 'a+') as f:
         if results is not None:
             f.write(
                 f'{results.accuracy}, {attack_results.accuracy}, {results.confidence}, '
-                f'{attack_results.confidence}, {results.confidence_std}, {attack_results.confidence_std}, {run_name}\n'
+                f'{attack_results.confidence}, {results.confidence_std}, {attack_results.confidence_std}, {run_name}, {time.time()-start_time}\n'
             )
         else:
             f.write(
-                f', {attack_results.accuracy}, , {attack_results.confidence}, , {attack_results.confidence_std}, {run_name}\n'
+                f', {attack_results.accuracy}, , {attack_results.confidence}, , {attack_results.confidence_std}, {run_name}, {time.time()-start_time}\n'
             )
 
 
 def store_attacked_image(adversarial_train_dataloader, dir_path, image_name):
     dataiter = iter(adversarial_train_dataloader)
     images, _ = dataiter.next()
-    image = Variable(images, requires_grad=False)[0].numpy()
+    image = torch.tensor(images, requires_grad=False)[0].numpy()
     plt.imsave(os.path.join(dir_path, image_name), np.clip(np.transpose(image, (1, 2, 0)), 0, 1))
 
 
