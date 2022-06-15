@@ -12,6 +12,9 @@ class FastGradientTransform(torch.nn.Module):
     self.target = target
 
   def forward(self, img):
+    if self.epsilon == 0:
+      return img
+
     if self.target is None:
       image_with_noise = fast_gradient_method(
         self.model,
