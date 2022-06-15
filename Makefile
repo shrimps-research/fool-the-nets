@@ -31,4 +31,4 @@ jupyter-doris $(id):
 	ssh -N -f -L 9001:localhost:9001 $(id)@ssh.liacs.nl ssh -4 -N -f -L 9001:doris:9000 shrimps@doris
 
 jupyter-boris $(id):
-	ssh -N -f -L 8999:localhost:8999 $(id)@ssh.liacs.nl ssh -4 -N -f -L 8999:boris:9000 shrimps@boris
+	ssh -N -f -L 9002:localhost:9002 $(id)@ssh.liacs.nl ssh -4 -N -f -L 9002:boris:9000 shrimps@boris
