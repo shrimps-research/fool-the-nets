@@ -16,13 +16,15 @@ ViT_PRETRAINED_MODELS = {
 
 def get_vit(
   type=ViT,
-  device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+  device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+  num_classes = 1000
 ):
   pretrained_model:PretrainedModel = ViT_PRETRAINED_MODELS[type]
 
   model = timm.create_model(
     pretrained_model.weights_uri,
-    pretrained=True
+    pretrained=True,
+    num_classes=num_classes
   )
   model.to(device)
 
