@@ -8,7 +8,7 @@ CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activ
 conda-env:
 	conda create --name $(VENV) python
 	$(CONDA_ACTIVATE) $(VENV)
-	conda install cudnn cudatoolkit
+	conda install pytorch torchvision cudatoolkit=11.3 -c pytorch
 
 activate-conda-env:
 	$(CONDA_ACTIVATE) $(VENV)
