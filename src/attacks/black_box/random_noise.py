@@ -1,9 +1,9 @@
 import argparse
 
-from src.attacks.adversarial_attack import adversarial_attack
-from src.attacks.white_box.fgsm import SUPPORTED_MODEL_NAMES
-from src.attacks.black_box.transforms.random_noise import GaussianNoiseTransform
 from src.models.perceiver import PERCEIVER_IO_LEARNED_POS_EMBEDDINGS
+from src.attacks.adversarial_attack import adversarial_attack
+from src.attacks.black_box.transforms.random_noise import GaussianNoiseTransform
+from src.attacks.adversarial_attack import SUPPORTED_MODEL_NAMES
 
 def parsed_args():
   parser = argparse.ArgumentParser()
