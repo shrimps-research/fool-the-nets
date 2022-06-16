@@ -41,7 +41,7 @@ def get_dataset_and_dataloader(
     dataset.samples = [dataset.samples[idx] for idx in indices]
     dataset.targets = [dataset.targets[idx] for idx in indices]
 
-  kwargs = {"pin_memory": True, "num_workers": 1} if torch.cuda.is_available() else {}
+  kwargs = {"pin_memory": False, "num_workers": 0} if torch.cuda.is_available() else {}
 
   dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, **kwargs)
 
