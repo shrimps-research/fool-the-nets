@@ -11,6 +11,7 @@ ViT_PRETRAINED_MODELS = {
     feature_extractor=None,
     expected_image_size=224,
     model=None,
+    requires_normalization=False,
   ),
 }
 

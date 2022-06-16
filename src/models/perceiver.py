@@ -12,14 +12,16 @@ PRETRAINED_MODELS = {
     weights_uri="deepmind/vision-perceiver-learned",
     feature_extractor=PerceiverFeatureExtractor(),
     expected_image_size=224,
-    model=None
+    model=None,
+    requires_normalization=True,
   ),
   # TODO: Fourier model has not been tested yet. Expected image size to be defined as well
   PERCEIVER_IO_FOURIER: PretrainedModel(
     weights_uri="deepmind/vision-perceiver-fourier",
     feature_extractor=PerceiverFeatureExtractor.from_pretrained("deepmind/vision-perceiver-fourier"),
     expected_image_size=224,
-    model=None
+    model=None,
+    requires_normalization=True,
   ),
 }
 

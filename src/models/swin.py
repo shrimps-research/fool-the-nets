@@ -12,7 +12,8 @@ PRETRAINED_MODELS = {
     weights_uri="microsoft/swin-tiny-patch4-window7-224",
     feature_extractor=AutoFeatureExtractor.from_pretrained("microsoft/swin-tiny-patch4-window7-224"),
     expected_image_size=224,
-    model=None
+    model=None,
+    requires_normalization=True,
   ),
 }
 

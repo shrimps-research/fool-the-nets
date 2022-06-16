@@ -10,6 +10,7 @@ XCEPTION_PRETRAINED_MODELS = {
     feature_extractor=None,
     expected_image_size=224,
     model=timm.create_model('xception', pretrained=True),
+    requires_normalization=True,
   ),
 }
 

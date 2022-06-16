@@ -9,6 +9,7 @@ VGG_PRETRAINED_MODELS = {
     feature_extractor=None,
     expected_image_size=224,
     model=vgg16(pretrained=True),
+    requires_normalization=True,
   ),
 }
 
