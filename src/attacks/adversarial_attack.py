@@ -55,22 +55,16 @@ class Detach(object):
 
 def adversarial_attack(
   source_model_name,
-  target_model_name,
+  target_model_names,
   size,
   batch_size,
   methodToRun,
   kwargs,
-  include_original_accuracy=False,
 ):
   start_time = time.time()
   source_model = GET_MODEL_FUNCTION_BY_NAME[source_model_name](source_model_name)
-  target_model = get_target_model(source_model, source_model_name, target_model_name)
   attack_transform = methodToRun(source_model.model, **kwargs)
 
-  if include_original_accuracy:
-    results = run_on_original_images(batch_size, size, source_model, target_model)
-  else:
-    results = None
 
   adversarial_train_set, adversarial_train_dataloader = get_dataset_and_dataloader(
     dataset=DATASET,
@@ -87,15 +81,26 @@ def adversarial_attack(
       Detach()
     ]),
   )
-  attack_results = evaluate(target_model, adversarial_train_dataloader)
-  print("Accuracy on attacked train set:", attack_results.accuracy)
-  print("Average confidence on target class after attack:", np.mean(attack_results.confidence))
 
-  dir_path = get_results_dir(attack_transform, source_model_name, target_model_name)
-  run_name = f'{source_model_name}-{target_model_name}-{size}-{repr(attack_transform)}-epsilon_{kwargs["epsilon"]}'
-  write_results(attack_results, dir_path, results, run_name, start_time)
-  store_attacked_image(adversarial_train_dataloader, dir_path, image_name_from(kwargs, size))
-  print(f'Time took for {source_model_name} -> {target_model_name}: {time.time() - start_time}')
+  target_models = {name:get_target_model(source_model, source_model_name, name) for name in target_model_names}
+
+  attack_results_per_model = evaluate(target_models, adversarial_train_dataloader)
+
+  for target_model_name, attack_results in attack_results_per_model.items():
+    dir_path = get_results_dir(attack_transform, source_model_name, target_model_name)
+    print("Accuracy on attacked train set:", attack_results.accuracy)
+    print("Average confidence on target class after attack:", np.mean(attack_results.confidence))
+
+    if 'epsilon' in kwargs:
+      run_name = f'{source_model_name}-{target_model_name}-{size}-{repr(attack_transform)}-epsilon_{kwargs["epsilon"]}'
+    else:
+      run_name = f'{source_model_name}-{target_model_name}-{size}-{repr(attack_transform)}-iter_{kwargs["max_iterations"]}'
+
+    write_results(attack_results, dir_path, None, run_name, start_time)
+    print(f'Time took for {source_model_name} -> {target_model_name}: {time.time() - start_time}')
+
+  imagge_dir_path = get_images_dir(attack_transform, source_model_name)
+  store_attacked_image(adversarial_train_dataloader, imagge_dir_path, image_name_from(kwargs, size))
 
 def get_target_model(source_model, source_model_name, target_model_name):
   if source_model_name == target_model_name:
@@ -130,6 +135,15 @@ def get_results_dir(attack_transform, source_model_name, target_model_name):
   Path(dir_path).mkdir(parents=True, exist_ok=True)
   return dir_path
 
+def get_images_dir(attack_transform, source_model_name):
+  Path(os.path.join(os.path.dirname(__file__), RESULTS_DIR)).mkdir(parents=True, exist_ok=True)
+  dir_path = os.path.join(
+    os.path.dirname(__file__),
+    f'{RESULTS_DIR}/{repr(attack_transform)}-{source_model_name}'
+  )
+  Path(dir_path).mkdir(parents=True, exist_ok=True)
+  return dir_path
+
 def write_results(attack_results, dir_path, results, run_name, start_time):
   file_path = os.path.join(dir_path, RESULTS_FILE)
   if not Path(file_path).is_file():
@@ -156,8 +170,10 @@ def store_attacked_image(adversarial_train_dataloader, dir_path, image_name):
   plt.imsave(os.path.join(dir_path, image_name), np.clip(np.transpose(image, (1, 2, 0)), 0, 1))
 
 def image_name_from(kwargs, size):
-  return f'epsilon_{kwargs["epsilon"]}_{size}.png'
+  if 'epsilon' in kwargs:
+    return f'epsilon_{kwargs["epsilon"]}_{size}.png'
+  else:
+    return f'max_iterations_{kwargs["max_iterations"]}_{size}.png'
 
 if __name__ == '__main__':
-  adversarial_attack('vgg', 'vgg', 2, 2, FastGradientTransform, kwargs={'epsilon': 0.03},
-                     include_original_accuracy=True)
+  adversarial_attack('vgg', 'vgg', 2, 2, FastGradientTransform, kwargs={'epsilon': 0.03})

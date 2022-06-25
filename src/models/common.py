@@ -22,38 +22,44 @@ class EvaluationResults:
   confidence_std: float
 
 def evaluate(
-  model_info: PretrainedModel,
+  models_info_by_name,
   dataloader,
 ):
   device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
   normalize = T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 
-  model = model_info.model
-  # model = torch.nn.DataParallel(model, device_ids=[0, 1])
-  model.eval()
-  accuracy = load_metric("accuracy")
-  confidences = np.array([])
+  model_info_by_name = {}
+  accuracy_per_model = {}
+  confidences_per_model = {}
+  for name, model_info in models_info_by_name.items():
+    model = model_info.model
+    model.eval()
+    model_info_by_name[name] = model_info
+    accuracy_per_model[name] = load_metric("accuracy")
+    confidences_per_model[name] = np.array([])
 
   for batch in tqdm(dataloader):
-
     inputs = batch[0].to(device)
-    if model_info.requires_normalization:
-      inputs = normalize(inputs)
-
     labels = batch[1].to(device)
 
-    logits = model(inputs)
-    predictions = logits.argmax(-1).cpu().detach().numpy()
-    references = labels.cpu().detach().numpy()
-    accuracy.add_batch(predictions=predictions, references=references)
+    for name, model_info in model_info_by_name.items():
+      if model_info.requires_normalization:
+        inputs = normalize(inputs)
 
-    probs = F.softmax(logits, dim=1)
-    batch_confidences = probs.gather(1, labels.unsqueeze(1)).cpu().detach().numpy()
-    confidences = np.concatenate((confidences, np.squeeze(batch_confidences)))
+      model = model_info.model
+      logits = model(inputs)
+      predictions = logits.argmax(-1).cpu().detach().numpy()
+      references = labels.cpu().detach().numpy()
+      accuracy_per_model[name].add_batch(predictions=predictions, references=references)
 
-  return EvaluationResults(
-    accuracy=accuracy.compute()['accuracy'],
-    confidence=np.mean(confidences),
-    confidence_std=np.std(confidences)
-  )
+      probs = F.softmax(logits, dim=1)
+      batch_confidences = probs.gather(1, labels.unsqueeze(1)).cpu().detach().numpy()
+      confidences_per_model[name] = np.concatenate((confidences_per_model[name], np.squeeze(batch_confidences)))
+
+
+  return { name: EvaluationResults(
+    accuracy=accuracy_per_model[name].compute()['accuracy'],
+    confidence=np.mean(confidences_per_model[name]),
+    confidence_std=np.std(confidences_per_model[name])
+  ) for name in models_info_by_name.keys()}
 
