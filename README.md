@@ -1,36 +1,28 @@
-# PerceiverIO & Adversarial Attacks
+# Adversarial Attacks
+This repository includes our experimentation on white-box and black-box attacks on Vision models.
 
+## Vision models
+- PerceiverIO
+- Swin
+- ViT
+- Xception
+- VGG
 
 ## White box attacks
-
-- Fast Gradient Sign Method (FGSM)
-    ~~~
-    python attacks/white_box/fgsm.py [--model {perceiver-io,vit}] [--epsilon EPSILON] [--size SIZE] [--batch BATCH]
-    ~~~
-    where size is the number of images we want to attack.
-
+- Fast Gradient Sign Method (FGSM) 
 - Projected Gradient Descent (PGD)
-Similarly,
-    ~~~
-    python attacks/white_box/pgd.py [-h] [--model {perceiver-io,vit}] [--epsilon EPSILON] [--step STEP] [--iterations ITERATIONS] [--size SIZE] [--batch BATCH]
-    ~~~
+- Carlini Wagner (CW)
 
 ## Black box attacks
+- Transfer attack using FGSM, PGD or CW
+- ES attack
+- Encoder-Decoder architecture
 
-### Transfer attacking
-Use the adversarial examples that were found for a `source` model by using a white-box method in order 
-to attack a `target` network. This is considered a black-box attack as we do not use the model parameters of the target network:
-
-- FGSM:
-    ~~~
-    python attacks/black_box/fgsm_transfer_attack.py  [-h] [--source {perceiver-io,vit}] [-h] [--target {perceiver-io,vit}] [--epsilon EPSILON] [--size SIZE] [--batch BATCH]
-    ~~~
-
-- PGD:
-    ~~~
-    python attacks/black_box/pgd_transfer_attack.py  [-h] [--source {perceiver-io,vit}] [-h] [--target {perceiver-io,vit}] [--epsilon EPSILON] [--step STEP] [--iterations ITERATIONS] [--size SIZE] [--batch BATCH]
-    ~~~
-
+## Running experiments
+The `src/run_experiments.py` can be modified accordingly to run the requested adversarial attack
+~~~
+python -m src.run_experiments
+~~~
 
 ## Development Guidelines
 
